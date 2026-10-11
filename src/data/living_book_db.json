@@ -1,0 +1,240 @@
+{
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "Inspirational",
+      "slug": "inspirational",
+      "description": "Words and reflections to ignite the inner flame and inspire courage.",
+      "color": "#C8A66A",
+      "icon": "Sparkles",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-2",
+      "name": "Fiction",
+      "slug": "fiction",
+      "description": "Imaginative tales of extraordinary destinies, wonder, and human spirit.",
+      "color": "#536B4E",
+      "icon": "BookOpen",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-3",
+      "name": "Philosophy",
+      "slug": "philosophy",
+      "description": "Deep inquiries into existence, tranquility, ethics, and truth.",
+      "color": "#B86F50",
+      "icon": "Compass",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-4",
+      "name": "Mystery",
+      "slug": "mystery",
+      "description": "Shadowed labyrinths, forgotten manuscripts, and enigmatic discoveries.",
+      "color": "#3F4E4F",
+      "icon": "Key",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-5",
+      "name": "Fantasy",
+      "slug": "fantasy",
+      "description": "Magical realms where the impossible unfolds under ancient skies.",
+      "color": "#8D7B68",
+      "icon": "Feather",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-6",
+      "name": "Poetry",
+      "slug": "poetry",
+      "description": "Lyrical verses capturing the fragility and transcendence of memory.",
+      "color": "#A7727D",
+      "icon": "Heart",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-7",
+      "name": "Life Lessons",
+      "slug": "life-lessons",
+      "description": "Timeless perspectives gained from navigating sorrow, joy, and growth.",
+      "color": "#C08261",
+      "icon": "Sun",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "cat-8",
+      "name": "Short Stories",
+      "slug": "short-stories",
+      "description": "Bite-sized literary journeys for quiet reflective moments.",
+      "color": "#4A6B62",
+      "icon": "Coffee",
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "books": [
+    {
+      "id": "book-6",
+      "title": "The Secret Garden of Philosophy",
+      "slug": "the-secret-garden-of-philosophy",
+      "author": "Dr. Aris Thorne",
+      "description": "Timeless lessons from the Stoics, transcendentalists, and ancient sages, cultivated like perennials for modern resilience.",
+      "cover_url": "https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&q=80&w=800",
+      "spine_color": "#2C3E35",
+      "accent_color": "#C8A66A",
+      "category_id": "cat-3",
+      "total_pages": 288,
+      "estimated_reading_time": "4.5 hours",
+      "status": "published",
+      "published_at": "2026-02-15T00:00:00Z",
+      "featured": true,
+      "view_count": 1640,
+      "read_count": 530,
+      "created_at": "2026-01-06T00:00:00Z",
+      "updated_at": "2026-02-15T00:00:00Z"
+    }
+  ],
+  "chapters": {
+    "book-6": [
+      {
+        "id": "chap-6-1",
+        "book_id": "book-6",
+        "chapter_number": 1,
+        "title": "The Fortress Within",
+        "slug": "the-fortress-within",
+        "content_html": "\n        <p class=\"first-letter-dropcap\">E</p><p>very morning before the sun clears the Athenian hills, remind yourself: the people you meet today will be meddlesome, ungrateful, arrogant, dishonest, jealous, and surly. They are like this because they cannot distinguish good from evil.</p>\n        <p>But you have seen the beauty of good, and the ugliness of evil, and you have recognized that the wrongdoer has a nature related to your own—not of the same blood, but of the same mind, sharing in a portion of the divine.</p>\n        <blockquote>\"You have power over your mind—not outside events. Realize this, and you will find strength.\" — Marcus Aurelius</blockquote>\n        <p>No one can injure you unless you consent to the injury. Build the inner citadel with stone unyielding to fear and vanity.</p>\n      ",
+        "raw_text": "Every morning before the sun clears the Athenian hills, remind yourself: the people you meet today...",
+        "word_count": 145,
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z"
+      }
+    ]
+  },
+  "thoughts": [
+    {
+      "id": "th-1",
+      "quote": "Words are the only jewels that never lose their brilliance when passed from one soul to another.",
+      "author": "Marcus Aurelius",
+      "date": "2026-10-12",
+      "category": "Wisdom",
+      "handwritten_note": "Hold this truth close on restless days.",
+      "is_featured": true,
+      "is_published": true,
+      "share_count": 342,
+      "copy_count": 819,
+      "created_at": "2026-10-12T00:00:00Z",
+      "updated_at": "2026-10-12T00:00:00Z"
+    }
+  ],
+  "stories": [
+    {
+      "id": "story-2",
+      "title": "The Girl Who Listened to Falling Stars",
+      "slug": "the-girl-who-listened-to-falling-stars",
+      "author": "Clara Fontaine",
+      "category_id": "cat-5",
+      "cover_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800",
+      "excerpt": "She held a hollow seashell to her ear each night, not to hear the sea, but the silent sighs of dying comets.",
+      "content_html": "\n      <p class=\"first-letter-dropcap\">M</p><p>irabel lived on the eastern headland where the wind tasted of salt spray and heather. While the village slept, she climbed the basalt rocks with a polished nautilus shell tucked into her wool pocket.</p>\n      <p>Astronomers recorded celestial coordinates; Mirabel recorded songs. Every shooting star that burned across the sapphire atmosphere sang a single chord before vanishing into silence.</p>\n      <p>\"Tonight was a minor seventh,\" she wrote in her parchment diary. \"A star from Orion's belt, singing of the desert it watched over ten thousand years ago.\"</p>\n    ",
+      "reading_time_minutes": 5,
+      "is_featured": false,
+      "status": "published",
+      "published_at": "2026-10-08T00:00:00Z",
+      "view_count": 530,
+      "created_at": "2026-10-02T00:00:00Z",
+      "updated_at": "2026-10-08T00:00:00Z"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "admin-1",
+      "email": "admin@thelivingbook.com",
+      "display_name": "The Grand Archivist",
+      "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
+      "role": "admin",
+      "bio": "Curator and keeper of the living sanctuary.",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "reader-1",
+      "email": "reader@thelivingbook.com",
+      "display_name": "Rowan the Seeker",
+      "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
+      "role": "reader",
+      "bio": "Avid explorer of fantasy, poetry, and midnight philosophy.",
+      "favorite_genre": "Mystery",
+      "created_at": "2026-01-15T00:00:00Z"
+    }
+  ],
+  "readingProgress": [
+    {
+      "id": "prog-1791750340655",
+      "user_id": "admin-1",
+      "book_id": "book-5",
+      "current_page": 1,
+      "total_pages": 2,
+      "percentage": 50,
+      "last_read_at": "2026-10-11T20:25:40.655Z"
+    },
+    {
+      "id": "prog-1791750318241",
+      "user_id": "admin-1",
+      "book_id": "book-1",
+      "current_page": 5,
+      "total_pages": 5,
+      "percentage": 100,
+      "last_read_at": "2026-10-11T20:25:24.602Z"
+    },
+    {
+      "id": "prog-1",
+      "user_id": "reader-1",
+      "book_id": "book-1",
+      "current_page": 5,
+      "total_pages": 5,
+      "percentage": 100,
+      "last_read_at": "2026-10-11T20:21:51.138Z"
+    },
+    {
+      "id": "prog-2",
+      "user_id": "reader-1",
+      "book_id": "book-2",
+      "current_page": 3,
+      "total_pages": 3,
+      "percentage": 100,
+      "last_read_at": "2026-10-11T20:22:02.600Z"
+    }
+  ],
+  "bookmarks": [
+    {
+      "id": "bm-1",
+      "user_id": "reader-1",
+      "book_id": "book-1",
+      "chapter_id": "chap-1-1",
+      "page_number": 12,
+      "chapter_title": "The Vault of Forgotten Inks",
+      "quote": "To write is to create an echo; to read is to invite a ghost to sit by your hearth.",
+      "note": "Favorite definition of reading.",
+      "created_at": "2026-10-11T18:30:00Z"
+    }
+  ],
+  "favorites": [],
+  "readingSessions": [
+    {
+      "id": "sess-1",
+      "user_id": "reader-1",
+      "book_id": "book-1",
+      "started_at": "2026-10-11T18:00:00Z",
+      "duration_minutes": 45,
+      "pages_read": 24
+    },
+    {
+      "id": "sess-2",
+      "user_id": "reader-1",
+      "book_id": "book-2",
+      "started_at": "2026-10-10T20:30:00Z",
+      "duration_minutes": 30,
+      "pages_read": 18
+    }
+  ]
+}

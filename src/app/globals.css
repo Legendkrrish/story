@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-forest: #10271F;
+    --color-midnight: #091812;
+    --color-ivory: #F5EBD7;
+    --color-ivory-light: #FAF4E8;
+    --color-ivory-dark: #E8DCC4;
+    --color-gold: #C8A66A;
+    --color-gold-light: #DFCA9B;
+    --color-gold-dark: #A68446;
+    --color-terracotta: #B86F50;
+    --color-ink: #25241F;
+    --color-moss: #536B4E;
+    --color-moss-light: #728F6C;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom 3D Perspective & Preservation */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.perspective-1500 {
+  perspective: 1500px;
+}
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Paper and Leather Textures via CSS Patterns */
+.paper-texture {
+  background-color: #F5EBD7;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(220, 205, 180, 0.25) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.012) 2px, rgba(0, 0, 0, 0.012) 4px);
+}
+
+.paper-texture-dark {
+  background-color: #171614;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(40, 36, 32, 0.5) 0%, rgba(18, 16, 14, 0.8) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.015) 2px, rgba(255, 255, 255, 0.015) 4px);
+}
+
+.paper-texture-sepia {
+  background-color: #EBDCB9;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(255, 248, 230, 0.5) 0%, rgba(200, 180, 140, 0.35) 100%);
+}
+
+.paper-shadow {
+  box-shadow: 
+    0 1px 3px rgba(16, 39, 31, 0.08),
+    0 8px 24px -4px rgba(16, 39, 31, 0.16),
+    0 18px 36px -8px rgba(0, 0, 0, 0.22);
+}
+
+/* Spine Shadow for Double-Page Spread */
+.spine-shadow-left {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.18) 96%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+.spine-shadow-right {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.18) 96%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+.spine-shadow-center {
+  box-shadow: inset 0 0 45px rgba(37, 36, 31, 0.25);
+}
+
+/* Gold Accent Shimmer and Borders */
+.gold-gradient {
+  background: linear-gradient(135deg, #DFCA9B 0%, #C8A66A 50%, #A68446 100%);
+}
+
+.gold-border {
+  border: 1px solid rgba(200, 166, 106, 0.3);
+}
+
+.gold-glow {
+  box-shadow: 0 0 25px rgba(200, 166, 106, 0.25);
+}
+
+.forest-gradient {
+  background: radial-gradient(circle at 50% 0%, #153228 0%, #10271F 55%, #091812 100%);
+}
+
+/* Custom Scrollbar for reader & library */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(16, 39, 31, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 166, 106, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 166, 106, 0.7);
+}
+
+/* Book Edge Effect (Visible stacked paper sheets) */
+.book-edge-shadow {
+  background: repeating-linear-gradient(
+    to bottom,
+    #F5EBD7,
+    #F5EBD7 2px,
+    #E8DCC4 2px,
+    #E8DCC4 4px
+  );
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Drop Cap Styling */
+.first-letter-dropcap::first-letter {
+  float: left;
+  font-size: 3.5em;
+  line-height: 0.8;
+  padding-top: 4px;
+  padding-right: 8px;
+  padding-bottom: 2px;
+  font-family: var(--font-cinzel), serif;
+  color: #C8A66A;
+  font-weight: 700;
 }
