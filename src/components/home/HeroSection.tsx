@@ -1,15 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, Sparkles, Compass, ArrowRight } from "lucide-react";
+import { BookOpen, Sparkles, ArrowRight } from "lucide-react";
+import { Book } from "@/types/database";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  initialBook?: Book | null;
+}
+
+export default function HeroSection({ initialBook }: HeroSectionProps) {
   const router = useRouter();
+  const [book, setBook] = useState<Book | null>(initialBook || null);
   const [rotateX, setRotateX] = useState(-5);
   const [rotateY, setRotateY] = useState(15);
   const [isOpening, setIsOpening] = useState(false);
+
+  // If initialBook wasn't passed, fetch the most read book dynamically
+  useEffect(() => {
+    if (!book) {
+      fetch("/api/books/most-read")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.book) {
+            setBook(data.book);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [book]);
+
+  const activeBook = book || {
+    id: "book-2",
+    title: "The Alchemist of Solitude",
+    slug: "the-alchemist-of-solitude",
+    author: "Marcus Sterling",
+    spine_color: "#4B2E1E",
+    accent_color: "#DFCA9B",
+    read_count: 612,
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isOpening) return;
@@ -30,8 +60,8 @@ export default function HeroSection() {
   const handleBookClick = () => {
     setIsOpening(true);
     setTimeout(() => {
-      router.push("/read/the-whispering-archive");
-    }, 950);
+      router.push(`/read/${activeBook.slug}`);
+    }, 700);
   };
 
   return (
@@ -76,8 +106,26 @@ export default function HeroSection() {
               Discover thoughts that inspire you, stories that move you, and books that stay with you—experienced through the tactile wonder of living pages.
             </p>
 
+            {/* Trending Reader Favorite Callout */}
+            <div className="flex items-center justify-center lg:justify-start">
+              <Link
+                href={`/read/${activeBook.slug}`}
+                className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#10271F]/70 border border-[#C8A66A]/30 text-xs font-serif text-[#DFCA9B] hover:text-[#F5EBD7] hover:border-[#C8A66A] transition-all group"
+              >
+                <span className="text-[#C8A66A]">✦ Most Read Sanctuary Volume:</span>
+                <span className="font-semibold underline decoration-[#C8A66A]/50 group-hover:decoration-[#DFCA9B]">
+                  {activeBook.title}
+                </span>
+                {activeBook.read_count && (
+                  <span className="text-[10px] text-[#C8A66A] font-sans">
+                    ({activeBook.read_count.toLocaleString()} reads)
+                  </span>
+                )}
+              </Link>
+            </div>
+
             {/* Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <a
                 href="#bookshelf"
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-[#C8A66A] via-[#DFCA9B] to-[#C8A66A] text-[#091812] font-bold text-sm tracking-wider uppercase shadow-xl hover:shadow-[#C8A66A]/30 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center space-x-2 group"
@@ -113,7 +161,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Large 3D Hardcover Book in Sunlight */}
+          {/* Right Column: Large 3D Hardcover Book in Sunlight (Dynamically Most Read) */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center perspective-1500 py-6">
             <div
               onMouseMove={handleMouseMove}
@@ -139,25 +187,29 @@ export default function HeroSection() {
               >
                 {/* Book Spine (3D Left Edge with Raised Ribs) */}
                 <div
-                  className="absolute left-0 top-0 w-12 h-full bg-gradient-to-r from-[#0C1E17] via-[#1A3C34] to-[#0C1E17] border-l border-[#C8A66A]/40 origin-left flex flex-col justify-between py-6"
+                  className="absolute left-0 top-0 w-12 h-full border-l border-[#C8A66A]/40 origin-left flex flex-col justify-between py-6"
                   style={{
+                    backgroundColor: activeBook.spine_color || "#10271F",
+                    backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.7), transparent 30%, transparent 70%, rgba(0,0,0,0.7))",
                     transform: "rotateY(-90deg) translateX(-48px)",
                   }}
                 >
                   {/* Raised Leather Spine Ribs */}
-                  <div className="h-1 w-full bg-gradient-to-r from-[#0C1E17] via-[#C8A66A]/80 to-[#0C1E17] shadow-md" />
-                  <div className="h-1 w-full bg-gradient-to-r from-[#0C1E17] via-[#C8A66A]/80 to-[#0C1E17] shadow-md" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
                   <div className="h-full flex items-center justify-center rotate-90 text-[#DFCA9B] font-serif text-[11px] tracking-[0.25em] font-semibold whitespace-nowrap opacity-90 drop-shadow">
-                    THE WHISPERING ARCHIVE
+                    {activeBook.title.toUpperCase()}
                   </div>
-                  <div className="h-1 w-full bg-gradient-to-r from-[#0C1E17] via-[#C8A66A]/80 to-[#0C1E17] shadow-md" />
-                  <div className="h-1 w-full bg-gradient-to-r from-[#0C1E17] via-[#C8A66A]/80 to-[#0C1E17] shadow-md" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
                 </div>
 
                 {/* Hanging Silk Bookmark Ribbon at Bottom */}
                 <div
-                  className="absolute -bottom-8 right-16 w-5 h-12 bg-gradient-to-b from-[#C8A66A] to-[#8F6F3A] shadow-xl rounded-b-xs border-x border-[#DFCA9B]/60 transform -rotate-2 -z-10 pointer-events-none"
+                  className="absolute -bottom-8 right-16 w-5 h-12 shadow-xl rounded-b-xs border-x transform -rotate-2 -z-10 pointer-events-none"
                   style={{
+                    backgroundColor: activeBook.accent_color || "#C8A66A",
+                    borderColor: "#DFCA9B",
                     clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%)",
                   }}
                 />
@@ -176,7 +228,7 @@ export default function HeroSection() {
                     isOpening ? "origin-left -rotate-y-120" : ""
                   }`}
                   style={{
-                    backgroundColor: "#10271F",
+                    backgroundColor: activeBook.spine_color || "#10271F",
                     backgroundImage: `
                       radial-gradient(circle at 50% 30%, rgba(200, 166, 106, 0.22) 0%, transparent 70%),
                       repeating-linear-gradient(45deg, rgba(200, 166, 106, 0.03) 0px, rgba(200, 166, 106, 0.03) 2px, transparent 2px, transparent 6px)
@@ -185,6 +237,7 @@ export default function HeroSection() {
                 >
                   {/* Shimmer Light Reflection Sweep on Hover */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                  
                   {/* Embossed Gold Foil Corner Ornaments */}
                   <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-[#C8A66A]" />
                   <div className="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-[#C8A66A]" />
@@ -194,25 +247,28 @@ export default function HeroSection() {
                   {/* Spine Crease Line */}
                   <div className="absolute top-0 bottom-0 left-6 w-[2px] bg-gradient-to-r from-black/40 via-white/10 to-transparent" />
 
-                  {/* Header Badge */}
+                  {/* Header Badge: Automatically Displays Most Read Stats */}
                   <div className="text-center pt-2">
-                    <span className="text-[10px] tracking-[0.3em] uppercase text-[#C8A66A] font-semibold">
-                      VOLUME I • SANCTUARY PRESS
+                    <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#091812]/80 border border-[#C8A66A]/40 text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-[#DFCA9B] font-semibold">
+                      <Sparkles className="w-3 h-3 text-[#C8A66A]" />
+                      <span>
+                        MOST READ • {activeBook.read_count ? `${activeBook.read_count.toLocaleString()} READS` : "SANCTUARY FAVORITE"}
+                      </span>
                     </span>
                   </div>
 
                   {/* Central Medallion & Title */}
                   <div className="text-center space-y-4 my-auto px-2">
                     <div className="w-16 h-16 mx-auto rounded-full border-2 border-[#C8A66A] flex items-center justify-center bg-[#091812]/80 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                      <Sparkles className="w-8 h-8 text-[#DFCA9B]" />
+                      <BookOpen className="w-8 h-8 text-[#DFCA9B]" />
                     </div>
 
                     <div className="space-y-1">
-                      <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-wide text-[#F5EBD7] drop-shadow-md">
-                        The Whispering Archive
+                      <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-wide text-[#F5EBD7] drop-shadow-md line-clamp-2">
+                        {activeBook.title}
                       </h2>
                       <p className="font-serif italic text-sm text-[#DFCA9B]/90">
-                        By Evelyn Vance
+                        By {activeBook.author}
                       </p>
                     </div>
 
@@ -233,7 +289,7 @@ export default function HeroSection() {
 
               {/* Floating hint label */}
               <p className="text-center text-xs font-serif italic text-[#C8A66A]/80 mt-4 animate-bounce">
-                ✦ Hover to tilt in 3D • Click to read volume ✦
+                ✦ Hover to tilt in 3D • Click to read most read volume ✦
               </p>
             </div>
           </div>

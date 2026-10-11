@@ -240,6 +240,40 @@ export const db = {
     };
   },
 
+  getMostReadBook: (): (Book & { category?: Category }) | null => {
+    const data = loadDatabase();
+    const publishedBooks = data.books.filter((b) => b.status === "published");
+    if (publishedBooks.length === 0) return null;
+    const sorted = [...publishedBooks].sort((a, b) => {
+      const readDiff = (b.read_count || 0) - (a.read_count || 0);
+      if (readDiff !== 0) return readDiff;
+      return (b.view_count || 0) - (a.view_count || 0);
+    });
+    const topBook = sorted[0];
+    return {
+      ...topBook,
+      category: data.categories.find((c) => c.id === topBook.category_id),
+    };
+  },
+
+  incrementBookViewCount: (idOrSlug: string) => {
+    const data = loadDatabase();
+    const book = data.books.find((b) => b.id === idOrSlug || b.slug === idOrSlug);
+    if (book) {
+      book.view_count = (book.view_count || 0) + 1;
+      saveDatabase(data);
+    }
+  },
+
+  incrementBookReadCount: (idOrSlug: string) => {
+    const data = loadDatabase();
+    const book = data.books.find((b) => b.id === idOrSlug || b.slug === idOrSlug);
+    if (book) {
+      book.read_count = (book.read_count || 0) + 1;
+      saveDatabase(data);
+    }
+  },
+
   saveBook: (
     bookData: Partial<Book> & { chapters?: Partial<BookChapter>[] }
   ): Book => {

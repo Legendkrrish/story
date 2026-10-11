@@ -31,6 +31,9 @@ export default async function ReadPage({ params, searchParams }: ReadPageProps) 
     notFound();
   }
 
+  // Increment book view count
+  db.incrementBookViewCount(book.id);
+
   const initialPageNumber = page ? parseInt(page, 10) || 1 : 1;
 
   return <BookReader book={book} initialPage={initialPageNumber} />;

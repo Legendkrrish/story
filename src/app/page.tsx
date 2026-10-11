@@ -16,6 +16,7 @@ export const metadata = {
 
 export default function HomePage() {
   const books = db.getBooks({ status: "published" });
+  const mostReadBook = db.getMostReadBook() || books[0];
   const categories = db.getCategories();
   const todayThought = db.getTodayThought();
   const previousThoughts = db.getDailyThoughts({ isPublished: true, limit: 6 });
@@ -25,8 +26,8 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 1. Immersive Hero with 3D Hardcover Book */}
-      <HeroSection />
+      {/* 1. Immersive Hero with 3D Hardcover Book (Automatically Most Read) */}
+      <HeroSection initialBook={mostReadBook} />
 
       {/* 2. Continue Reading (if user has active reads) */}
       <ContinueReadingSection initialProgress={userProgress} />
