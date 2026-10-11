@@ -15,6 +15,7 @@ import {
   Search,
   LogOut,
 } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -77,21 +78,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-3 group text-decoration-none"
-          >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#10271F] to-[#091812] border border-[#C8A66A]/40 flex items-center justify-center shadow-lg group-hover:border-[#C8A66A] transition-all duration-300">
-              <BookOpen className="w-5 h-5 text-[#C8A66A] group-hover:scale-110 transition-transform duration-300" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif tracking-widest text-lg sm:text-xl font-bold bg-gradient-to-r from-[#F5EBD7] via-[#DFCA9B] to-[#C8A66A] bg-clip-text text-transparent">
-                THE LIVING BOOK
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.25em] text-[#C8A66A]/70 font-sans -mt-1">
-                Sanctuary of Stories
-              </span>
-            </div>
+          <Link href="/" className="text-decoration-none">
+            <BrandLogo size="md" />
           </Link>
 
           {/* Desktop Navigation */}

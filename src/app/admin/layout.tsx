@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getCurrentSession } from "@/lib/auth/session";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 export const dynamic = "force-dynamic";
 
@@ -50,19 +51,9 @@ export default async function AdminLayout({
       <aside className="w-full md:w-64 lg:w-72 bg-[#091812] border-r border-[#C8A66A]/20 p-6 flex flex-col justify-between shrink-0">
         <div className="space-y-8">
           {/* Header */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-[#10271F] border border-[#C8A66A] flex items-center justify-center shadow-lg">
-              <Shield className="w-5 h-5 text-[#C8A66A]" />
-            </div>
-            <div>
-              <h2 className="font-serif font-bold text-lg text-[#F5EBD7] tracking-wide">
-                Archivist Portal
-              </h2>
-              <span className="text-[10px] uppercase font-sans tracking-widest text-[#C8A66A]/80">
-                Administrator
-              </span>
-            </div>
-          </div>
+          <Link href="/" className="inline-block">
+            <BrandLogo size="sm" />
+          </Link>
 
           {/* Nav links */}
           <nav className="space-y-1.5 font-sans text-xs">

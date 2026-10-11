@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, Sparkles, Feather, Compass, Heart, Globe, Share2, Mail } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -22,18 +23,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-[#C8A66A]/10">
           {/* Column 1: Brand & Philosophy */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 rounded-lg bg-[#10271F] border border-[#C8A66A]/40 flex items-center justify-center shadow-lg">
-                <BookOpen className="w-5 h-5 text-[#C8A66A]" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-serif tracking-widest text-xl font-bold bg-gradient-to-r from-[#F5EBD7] to-[#C8A66A] bg-clip-text text-transparent">
-                  THE LIVING BOOK
-                </span>
-                <span className="text-[10px] uppercase tracking-[0.25em] text-[#C8A66A]/70 font-sans">
-                  The Sanctuary of Living Words
-                </span>
-              </div>
+            <Link href="/" className="inline-block">
+              <BrandLogo size="md" />
             </Link>
             <p className="text-sm text-[#F5EBD7]/70 leading-relaxed font-serif max-w-sm">
               An immersive digital haven where every story is a physical object brought to life. Turn the pages of timeless thoughts, mastercrafted fiction, and wisdom from ancient horizons.

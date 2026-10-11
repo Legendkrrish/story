@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BookOpen, User, Key, Mail, Sparkles, ArrowRight } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -45,8 +46,8 @@ export default function RegisterPage() {
 
       <div className="max-w-md w-full relative z-10">
         <div className="text-center space-y-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-[#10271F] border border-[#C8A66A]/50 flex items-center justify-center mx-auto shadow-xl">
-            <Sparkles className="w-6 h-6 text-[#C8A66A]" />
+          <div className="flex justify-center mb-2">
+            <BrandLogo size="lg" showText={false} />
           </div>
           <h1 className="font-serif text-3xl font-bold text-[#F5EBD7]">
             Begin Your Passage
