@@ -31,14 +31,15 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
     }
   }, [book]);
 
+  const hasBooks = Boolean(book && book.slug);
   const activeBook = book || {
-    id: "book-2",
-    title: "The Alchemist of Solitude",
-    slug: "the-alchemist-of-solitude",
-    author: "Marcus Sterling",
-    spine_color: "#4B2E1E",
-    accent_color: "#DFCA9B",
-    read_count: 612,
+    id: "unwritten-volume",
+    title: "The Unwritten Folio",
+    slug: "",
+    author: "Your First Living Manuscript",
+    spine_color: "#143228",
+    accent_color: "#C8A66A",
+    read_count: 0,
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -60,7 +61,11 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
   const handleBookClick = () => {
     setIsOpening(true);
     setTimeout(() => {
-      router.push(`/read/${activeBook.slug}`);
+      if (hasBooks && activeBook.slug) {
+        router.push(`/read/${activeBook.slug}`);
+      } else {
+        router.push("/admin/books/new");
+      }
     }, 700);
   };
 
@@ -106,22 +111,36 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
               Discover thoughts that inspire you, stories that move you, and books that stay with you—experienced through the tactile wonder of living pages.
             </p>
 
-            {/* Trending Reader Favorite Callout */}
+            {/* Trending Reader Favorite Callout or Empty Invitation */}
             <div className="flex items-center justify-center lg:justify-start">
-              <Link
-                href={`/read/${activeBook.slug}`}
-                className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#10271F]/70 border border-[#C8A66A]/30 text-xs font-serif text-[#DFCA9B] hover:text-[#F5EBD7] hover:border-[#C8A66A] transition-all group"
-              >
-                <span className="text-[#C8A66A]">✦ Most Read Sanctuary Volume:</span>
-                <span className="font-semibold underline decoration-[#C8A66A]/50 group-hover:decoration-[#DFCA9B]">
-                  {activeBook.title}
-                </span>
-                {activeBook.read_count && (
-                  <span className="text-[10px] text-[#C8A66A] font-sans">
-                    ({activeBook.read_count.toLocaleString()} reads)
+              {hasBooks ? (
+                <Link
+                  href={`/read/${activeBook.slug}`}
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#10271F]/70 border border-[#C8A66A]/30 text-xs font-serif text-[#DFCA9B] hover:text-[#F5EBD7] hover:border-[#C8A66A] transition-all group"
+                >
+                  <span className="text-[#C8A66A]">✦ Most Read Sanctuary Volume:</span>
+                  <span className="font-semibold underline decoration-[#C8A66A]/50 group-hover:decoration-[#DFCA9B]">
+                    {activeBook.title}
                   </span>
-                )}
-              </Link>
+                  {activeBook.read_count ? (
+                    <span className="text-[10px] text-[#C8A66A] font-sans">
+                      ({activeBook.read_count.toLocaleString()} reads)
+                    </span>
+                  ) : null}
+                </Link>
+              ) : (
+                <Link
+                  href="/admin/books/new"
+                  className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-[#10271F]/80 border border-[#C8A66A]/40 text-xs font-serif text-[#DFCA9B] hover:text-[#F5EBD7] hover:border-[#C8A66A] transition-all group"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#C8A66A] animate-pulse" />
+                  <span className="text-[#C8A66A]">Sanctuary Ready:</span>
+                  <span className="underline decoration-[#C8A66A]/50">
+                    Import your first Word (.docx) book
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#C8A66A] group-hover:translate-x-1 transition-transform" />
+                </Link>
+              )}
             </div>
 
             {/* Buttons */}
@@ -252,7 +271,9 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
                     <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#091812]/80 border border-[#C8A66A]/40 text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-[#DFCA9B] font-semibold">
                       <Sparkles className="w-3 h-3 text-[#C8A66A]" />
                       <span>
-                        MOST READ • {activeBook.read_count ? `${activeBook.read_count.toLocaleString()} READS` : "SANCTUARY FAVORITE"}
+                        {hasBooks
+                          ? `MOST READ • ${activeBook.read_count ? `${activeBook.read_count.toLocaleString()} READS` : "SANCTUARY FAVORITE"}`
+                          : "SANCTUARY READY • CLICK TO ADD BOOK"}
                       </span>
                     </span>
                   </div>
@@ -268,7 +289,7 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
                         {activeBook.title}
                       </h2>
                       <p className="font-serif italic text-sm text-[#DFCA9B]/90">
-                        By {activeBook.author}
+                        {hasBooks ? `By ${activeBook.author}` : activeBook.author}
                       </p>
                     </div>
 
@@ -278,7 +299,11 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
                   {/* Bottom Footer Notice */}
                   <div className="text-center pb-2">
                     <span className="inline-block px-3 py-1 rounded-full bg-[#091812]/70 border border-[#C8A66A]/40 text-[11px] font-sans text-[#DFCA9B] tracking-wider uppercase group-hover:bg-[#C8A66A] group-hover:text-[#091812] transition-colors">
-                      {isOpening ? "Opening Pages..." : "Click to Open Book"}
+                      {isOpening
+                        ? "Opening Pages..."
+                        : hasBooks
+                        ? "Click to Open Book"
+                        : "Click to Import (.docx)"}
                     </span>
                   </div>
                 </div>

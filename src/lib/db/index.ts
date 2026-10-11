@@ -74,34 +74,16 @@ function loadDatabase(): DatabaseState {
     needsSync = true;
   }
 
-  // Books: ensure all initial books exist, merge user-created books
-  const bookMap = new Map<string, Book>();
-  initialBooks.forEach((b) => bookMap.set(b.id, b));
-  if (loaded?.books && Array.isArray(loaded.books)) {
-    loaded.books.forEach((b) => bookMap.set(b.id, b));
-  }
-  if (!loaded?.books || loaded.books.length < initialBooks.length) {
-    needsSync = true;
+  // Books: use loaded books if defined (can be empty array if user cleared books)
+  let books: Book[] = [];
+  if (loaded && Array.isArray(loaded.books)) {
+    books = loaded.books;
   }
 
-  // Chapters: ensure all initial chapters exist, merge user-created chapters
-  const chapters: Record<string, BookChapter[]> = { ...initialChapters };
-  if (loaded?.chapters && typeof loaded.chapters === "object") {
-    for (const [bookId, chapList] of Object.entries(loaded.chapters)) {
-      if (Array.isArray(chapList) && chapList.length > 0) {
-        chapters[bookId] = chapList;
-      }
-    }
-  } else {
-    needsSync = true;
-  }
-  for (const b of initialBooks) {
-    if (!chapters[b.id] || chapters[b.id].length === 0) {
-      if (initialChapters[b.id]) {
-        chapters[b.id] = initialChapters[b.id];
-        needsSync = true;
-      }
-    }
+  // Chapters: respect loaded chapters
+  let chapters: Record<string, BookChapter[]> = {};
+  if (loaded && typeof loaded.chapters === "object" && loaded.chapters !== null) {
+    chapters = loaded.chapters;
   }
 
   // Thoughts: ensure all initial thoughts exist
@@ -109,8 +91,7 @@ function loadDatabase(): DatabaseState {
   initialThoughts.forEach((t) => thoughtMap.set(t.id, t));
   if (loaded?.thoughts && Array.isArray(loaded.thoughts)) {
     loaded.thoughts.forEach((t) => thoughtMap.set(t.id, t));
-  }
-  if (!loaded?.thoughts || loaded.thoughts.length < initialThoughts.length) {
+  } else {
     needsSync = true;
   }
 
@@ -119,8 +100,7 @@ function loadDatabase(): DatabaseState {
   initialStories.forEach((s) => storyMap.set(s.id, s));
   if (loaded?.stories && Array.isArray(loaded.stories)) {
     loaded.stories.forEach((s) => storyMap.set(s.id, s));
-  }
-  if (!loaded?.stories || loaded.stories.length < initialStories.length) {
+  } else {
     needsSync = true;
   }
 
@@ -129,36 +109,21 @@ function loadDatabase(): DatabaseState {
   initialProfiles.forEach((p) => profileMap.set(p.id, p));
   if (loaded?.profiles && Array.isArray(loaded.profiles)) {
     loaded.profiles.forEach((p) => profileMap.set(p.id, p));
+  } else {
+    needsSync = true;
   }
 
   cachedDb = {
     categories: Array.from(categoryMap.values()),
-    books: Array.from(bookMap.values()),
+    books,
     chapters,
     thoughts: Array.from(thoughtMap.values()),
     stories: Array.from(storyMap.values()),
     profiles: Array.from(profileMap.values()),
-    readingProgress: loaded?.readingProgress || [...initialReadingProgress],
-    bookmarks: loaded?.bookmarks || [...initialBookmarks],
+    readingProgress: loaded?.readingProgress || [],
+    bookmarks: loaded?.bookmarks || [],
     favorites: loaded?.favorites || [],
-    readingSessions: loaded?.readingSessions || [
-      {
-        id: "sess-1",
-        user_id: "reader-1",
-        book_id: "book-1",
-        started_at: "2026-10-11T18:00:00Z",
-        duration_minutes: 45,
-        pages_read: 24,
-      },
-      {
-        id: "sess-2",
-        user_id: "reader-1",
-        book_id: "book-2",
-        started_at: "2026-10-10T20:30:00Z",
-        duration_minutes: 30,
-        pages_read: 18,
-      },
-    ],
+    readingSessions: loaded?.readingSessions || [],
   };
 
   if (needsSync || !fs.existsSync(DB_FILE)) {

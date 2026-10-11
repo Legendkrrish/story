@@ -99,7 +99,29 @@ export default function FeaturedBookshelf({
 
         {/* 3D Bookshelf Grid */}
         <div className="relative">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-8 pt-4">
+          {filteredBooks.length === 0 ? (
+            <div className="py-20 text-center space-y-4 max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-full border border-[#C8A66A]/40 bg-[#10271F] flex items-center justify-center mx-auto text-[#C8A66A]">
+                <BookOpen className="w-7 h-7" />
+              </div>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#F5EBD7]">
+                The Shelves Await Your Manuscripts
+              </h3>
+              <p className="font-serif text-sm text-[#F5EBD7]/70 italic leading-relaxed">
+                No volumes have been added yet. Head to the Archivist Portal to import your Word (.docx) manuscript or create your first volume.
+              </p>
+              <div className="pt-2">
+                <Link
+                  href="/admin/books/new"
+                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#C8A66A] to-[#DFCA9B] text-[#091812] font-semibold text-xs uppercase tracking-wider shadow-lg hover:shadow-[#C8A66A]/30 transition-all"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Import Word (.docx) Book</span>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-8 pt-4">
             {filteredBooks.map((book) => {
               const progress = getProgress(book.id);
               const isHovered = hoveredBookId === book.id;
@@ -249,6 +271,7 @@ export default function FeaturedBookshelf({
               );
             })}
           </div>
+        )}
         </div>
       </div>
     </section>

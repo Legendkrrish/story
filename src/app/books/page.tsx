@@ -87,18 +87,29 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
 
         {/* Books Grid */}
         {books.length === 0 ? (
-          <div className="text-center py-24 space-y-4 paper-texture rounded-2xl border border-[#C8A66A]/40 text-[#25241F] max-w-lg mx-auto p-12">
-            <Sparkles className="w-12 h-12 text-[#C8A66A] mx-auto" />
-            <h3 className="font-serif text-2xl font-bold">No Manuscripts Found</h3>
-            <p className="font-serif text-sm text-[#25241F]/70">
-              No volumes matched your search query in this corridor.
+          <div className="text-center py-20 space-y-4 rounded-2xl border border-[#C8A66A]/30 bg-[#10271F]/80 p-8 sm:p-12 max-w-lg mx-auto">
+            <BookOpen className="w-12 h-12 text-[#C8A66A] mx-auto opacity-80" />
+            <h3 className="font-serif text-2xl font-bold text-[#F5EBD7]">The Archives Await Your Volumes</h3>
+            <p className="font-serif text-sm text-[#F5EBD7]/70 italic">
+              No volumes have been added yet. Head to the Archivist Portal to import your Word (.docx) manuscript or create your first volume.
             </p>
-            <Link
-              href="/books"
-              className="inline-block px-5 py-2 rounded-full bg-[#10271F] text-[#F5EBD7] text-xs font-bold uppercase tracking-wider"
-            >
-              Reset Filters
-            </Link>
+            <div className="pt-2 flex items-center justify-center gap-3">
+              <Link
+                href="/admin/books/new"
+                className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#C8A66A] to-[#DFCA9B] text-[#091812] text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-[#C8A66A]/30 transition-all"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Import Word (.docx) Book</span>
+              </Link>
+              {search && (
+                <Link
+                  href="/books"
+                  className="px-4 py-2.5 rounded-full bg-[#091812] border border-[#C8A66A]/30 text-xs text-[#DFCA9B]"
+                >
+                  Clear Search
+                </Link>
+              )}
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
