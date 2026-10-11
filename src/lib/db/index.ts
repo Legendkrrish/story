@@ -52,29 +52,96 @@ function ensureDataDirectory() {
 function loadDatabase(): DatabaseState {
   if (cachedDb) return cachedDb;
 
+  let loaded: Partial<DatabaseState> | null = null;
+  let needsSync = false;
+
   try {
     ensureDataDirectory();
     if (fs.existsSync(DB_FILE)) {
       const fileData = fs.readFileSync(DB_FILE, "utf-8");
-      cachedDb = JSON.parse(fileData);
-      return cachedDb!;
+      loaded = JSON.parse(fileData);
     }
   } catch (err) {
     console.error("Failed to read database file, initializing default data:", err);
   }
 
-  // Initialize with initial data
+  // Categories
+  const categoryMap = new Map<string, Category>();
+  initialCategories.forEach((c) => categoryMap.set(c.id, c));
+  if (loaded?.categories && Array.isArray(loaded.categories)) {
+    loaded.categories.forEach((c) => categoryMap.set(c.id, c));
+  } else {
+    needsSync = true;
+  }
+
+  // Books: ensure all initial books exist, merge user-created books
+  const bookMap = new Map<string, Book>();
+  initialBooks.forEach((b) => bookMap.set(b.id, b));
+  if (loaded?.books && Array.isArray(loaded.books)) {
+    loaded.books.forEach((b) => bookMap.set(b.id, b));
+  }
+  if (!loaded?.books || loaded.books.length < initialBooks.length) {
+    needsSync = true;
+  }
+
+  // Chapters: ensure all initial chapters exist, merge user-created chapters
+  const chapters: Record<string, BookChapter[]> = { ...initialChapters };
+  if (loaded?.chapters && typeof loaded.chapters === "object") {
+    for (const [bookId, chapList] of Object.entries(loaded.chapters)) {
+      if (Array.isArray(chapList) && chapList.length > 0) {
+        chapters[bookId] = chapList;
+      }
+    }
+  } else {
+    needsSync = true;
+  }
+  for (const b of initialBooks) {
+    if (!chapters[b.id] || chapters[b.id].length === 0) {
+      if (initialChapters[b.id]) {
+        chapters[b.id] = initialChapters[b.id];
+        needsSync = true;
+      }
+    }
+  }
+
+  // Thoughts: ensure all initial thoughts exist
+  const thoughtMap = new Map<string, DailyThought>();
+  initialThoughts.forEach((t) => thoughtMap.set(t.id, t));
+  if (loaded?.thoughts && Array.isArray(loaded.thoughts)) {
+    loaded.thoughts.forEach((t) => thoughtMap.set(t.id, t));
+  }
+  if (!loaded?.thoughts || loaded.thoughts.length < initialThoughts.length) {
+    needsSync = true;
+  }
+
+  // Stories: ensure all initial stories exist
+  const storyMap = new Map<string, Story>();
+  initialStories.forEach((s) => storyMap.set(s.id, s));
+  if (loaded?.stories && Array.isArray(loaded.stories)) {
+    loaded.stories.forEach((s) => storyMap.set(s.id, s));
+  }
+  if (!loaded?.stories || loaded.stories.length < initialStories.length) {
+    needsSync = true;
+  }
+
+  // Profiles
+  const profileMap = new Map<string, Profile>();
+  initialProfiles.forEach((p) => profileMap.set(p.id, p));
+  if (loaded?.profiles && Array.isArray(loaded.profiles)) {
+    loaded.profiles.forEach((p) => profileMap.set(p.id, p));
+  }
+
   cachedDb = {
-    categories: [...initialCategories],
-    books: [...initialBooks],
-    chapters: { ...initialChapters },
-    thoughts: [...initialThoughts],
-    stories: [...initialStories],
-    profiles: [...initialProfiles],
-    readingProgress: [...initialReadingProgress],
-    bookmarks: [...initialBookmarks],
-    favorites: [],
-    readingSessions: [
+    categories: Array.from(categoryMap.values()),
+    books: Array.from(bookMap.values()),
+    chapters,
+    thoughts: Array.from(thoughtMap.values()),
+    stories: Array.from(storyMap.values()),
+    profiles: Array.from(profileMap.values()),
+    readingProgress: loaded?.readingProgress || [...initialReadingProgress],
+    bookmarks: loaded?.bookmarks || [...initialBookmarks],
+    favorites: loaded?.favorites || [],
+    readingSessions: loaded?.readingSessions || [
       {
         id: "sess-1",
         user_id: "reader-1",
@@ -94,7 +161,10 @@ function loadDatabase(): DatabaseState {
     ],
   };
 
-  saveDatabase(cachedDb);
+  if (needsSync || !fs.existsSync(DB_FILE)) {
+    saveDatabase(cachedDb);
+  }
+
   return cachedDb;
 }
 
@@ -148,11 +218,20 @@ export const db = {
 
   getBookBySlug: (slug: string): (Book & { chapters: BookChapter[] }) | null => {
     const data = loadDatabase();
-    const book = data.books.find((b) => b.slug === slug || b.id === slug);
+    const cleanSlug = decodeURIComponent(slug).toLowerCase().trim();
+    const book = data.books.find(
+      (b) =>
+        b.slug.toLowerCase().trim() === cleanSlug ||
+        b.id.toLowerCase().trim() === cleanSlug
+    );
     if (!book) return null;
 
     const category = data.categories.find((c) => c.id === book.category_id);
-    const chapters = data.chapters[book.id] || [];
+    let chapters = data.chapters[book.id] || [];
+
+    if ((!chapters || chapters.length === 0) && initialChapters[book.id]) {
+      chapters = initialChapters[book.id];
+    }
 
     return {
       ...book,

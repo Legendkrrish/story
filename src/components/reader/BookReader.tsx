@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  BookOpen,
   ChevronLeft,
   ChevronRight,
   Bookmark as BookmarkIcon,
@@ -20,6 +19,7 @@ import {
   VolumeX,
   Sparkles,
 } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 import { Book, BookChapter } from "@/types/database";
 import { paginateChapterContent } from "@/lib/docx/parser";
 
@@ -40,9 +40,17 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Responsive Layout detection
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Reader State
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpeningAnim, setIsOpeningAnim] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [showToc, setShowToc] = useState(false);
   const [showFontMenu, setShowFontMenu] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -75,19 +83,36 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
       chapterTitle: "Frontispiece",
       chapterNumber: 0,
       html: `
-        <div class="h-full flex flex-col justify-between text-center py-8">
-          <div class="space-y-2">
-            <span class="text-xs uppercase tracking-[0.3em] font-sans text-[#C8A66A] font-bold">The Living Book Archive</span>
-            <div class="w-16 h-[1px] bg-[#C8A66A] mx-auto mt-2"></div>
+        <div class="h-full flex flex-col justify-between text-center p-6 sm:p-10 border-2 border-[#C8A66A]/30 rounded-lg relative overflow-hidden bg-gradient-to-b from-transparent via-[#C8A66A]/5 to-transparent">
+          <div class="space-y-3">
+            <div class="flex items-center justify-center space-x-2 text-[#C8A66A]">
+              <span class="text-xs">✦</span>
+              <span class="text-[10px] sm:text-xs uppercase tracking-[0.35em] font-sans font-bold">The Living Book Sanctuary</span>
+              <span class="text-xs">✦</span>
+            </div>
+            <div class="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#C8A66A] to-transparent mx-auto"></div>
           </div>
-          <div class="my-auto space-y-4">
-            <h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#10271F] dark:text-[#F5EBD7]">${book.title}</h1>
-            <p class="font-serif italic text-lg text-[#B86F50]">By ${book.author}</p>
-            <div class="w-24 h-[1px] bg-[#C8A66A]/50 mx-auto"></div>
-            <p class="text-xs font-serif max-w-xs mx-auto text-[#25241F]/70 dark:text-[#F5EBD7]/70 italic">${book.description}</p>
+
+          <div class="my-auto space-y-4 py-6">
+            <div class="w-10 h-10 rounded-full border border-[#C8A66A]/40 bg-[#C8A66A]/10 text-[#C8A66A] mx-auto flex items-center justify-center font-serif text-lg">
+              ❦
+            </div>
+            <h1 class="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-[#10271F] dark:text-[#F5EBD7] leading-tight max-w-md mx-auto">
+              ${book.title}
+            </h1>
+            <p class="font-serif italic text-base sm:text-lg text-[#B86F50] font-medium">
+              By ${book.author}
+            </p>
+            <div class="w-28 h-[1px] bg-gradient-to-r from-transparent via-[#C8A66A]/60 to-transparent mx-auto"></div>
+            <p class="text-xs sm:text-sm font-serif max-w-sm mx-auto text-[#25241F]/80 dark:text-[#F5EBD7]/80 italic leading-relaxed">
+              ${book.description}
+            </p>
           </div>
-          <div class="text-[11px] font-sans text-[#25241F]/60 dark:text-[#F5EBD7]/60">
-            Published in the Sanctuary • Volume 1
+
+          <div class="space-y-1 text-[10px] sm:text-[11px] font-sans text-[#25241F]/60 dark:text-[#F5EBD7]/60">
+            <div class="text-[#C8A66A] text-xs font-serif">✦ ✦ ✦</div>
+            <div>Sanctuary Archive • Hand-Bound Manuscript</div>
+            <div class="text-[#C8A66A] font-medium">Archival Folio Edition</div>
           </div>
         </div>
       `,
@@ -104,9 +129,10 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
       chapterPages.forEach((pageHtml, pIdx) => {
         const header =
           pIdx === 0
-            ? `<div class="mb-4 pb-2 border-b border-[#C8A66A]/30 text-center">
-                 <span class="text-[11px] uppercase tracking-[0.25em] font-sans text-[#C8A66A] font-bold">Chapter ${chapter.chapter_number}</span>
+            ? `<div class="mb-4 pb-3 border-b border-[#C8A66A]/30 text-center">
+                 <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-sans text-[#C8A66A] font-bold">Chapter ${chapter.chapter_number}</span>
                  <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#10271F] dark:text-[#F5EBD7] mt-1">${chapter.title}</h2>
+                 <div class="text-[#C8A66A]/60 text-xs mt-1 select-none font-serif">❦ ✦ ❦</div>
                </div>`
             : "";
 
@@ -130,7 +156,6 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
 
   // Resume or save progress
   useEffect(() => {
-    // Check local storage for bookmark & progress
     const saved = localStorage.getItem(`living_book_page_${book.id}`);
     if (saved && initialPage === 1) {
       const parsed = parseInt(saved, 10);
@@ -144,7 +169,6 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
   useEffect(() => {
     localStorage.setItem(`living_book_page_${book.id}`, currentPage.toString());
 
-    // Send progress to API
     const timeout = setTimeout(() => {
       fetch("/api/reading-progress", {
         method: "POST",
@@ -159,16 +183,6 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
 
     return () => clearTimeout(timeout);
   }, [currentPage, book.id, totalPages]);
-
-  // Initial Book Opening Animation
-  useEffect(() => {
-    setIsOpeningAnim(true);
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-      setIsOpeningAnim(false);
-    }, 1100);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Keyboard Navigation
   useEffect(() => {
@@ -196,7 +210,6 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
   const playPageSound = () => {
     if (!soundEnabled) return;
     try {
-      // Soft audio synthetic rustle using Web Audio API
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -215,11 +228,9 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
   // Next Page Handler
   const handleNextPage = () => {
     if (isFlipping) return;
-    // On desktop double-page, step 2 pages
-    const isDesktop = window.innerWidth >= 1024;
     const step = isDesktop ? 2 : 1;
 
-    if (currentPage + step <= totalPages + 1) {
+    if (currentPage < totalPages) {
       setIsFlipping(true);
       setFlipDirection("next");
       playPageSound();
@@ -228,14 +239,13 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
         setCurrentPage((prev) => Math.min(totalPages, prev + step));
         setIsFlipping(false);
         setFlipDirection(null);
-      }, 500);
+      }, 300);
     }
   };
 
   // Prev Page Handler
   const handlePrevPage = () => {
     if (isFlipping) return;
-    const isDesktop = window.innerWidth >= 1024;
     const step = isDesktop ? 2 : 1;
 
     if (currentPage > 1) {
@@ -247,7 +257,7 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
         setCurrentPage((prev) => Math.max(1, prev - step));
         setIsFlipping(false);
         setFlipDirection(null);
-      }, 500);
+      }, 300);
     }
   };
 
@@ -274,13 +284,13 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
     }
   };
 
-  // Determine current left and right page objects
-  const isDesktopSpread = typeof window !== "undefined" && window.innerWidth >= 1024;
+  // Page index determination for desktop vs mobile
   const leftPageIndex = currentPage % 2 === 0 ? currentPage - 2 : currentPage - 1;
   const rightPageIndex = leftPageIndex + 1;
 
   const leftPage = allPages[leftPageIndex];
   const rightPage = allPages[rightPageIndex];
+  const activeSinglePage = allPages[currentPage - 1];
 
   // Theme Styles
   const themeClasses = {
@@ -325,7 +335,7 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
 
       {/* Top Floating Control Bar */}
       <header className="relative z-30 px-4 sm:px-8 py-3 flex items-center justify-between border-b border-[#C8A66A]/20 bg-[#091812]/90 backdrop-blur-md">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <Link
             href={`/books/${book.slug}`}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-[#10271F] border border-[#C8A66A]/30 text-xs font-semibold text-[#DFCA9B] hover:text-[#F5EBD7] hover:border-[#C8A66A] transition-colors"
@@ -333,13 +343,19 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Close Book</span>
           </Link>
-          <div className="hidden md:flex flex-col">
-            <span className="font-serif text-sm font-bold text-[#F5EBD7] max-w-xs truncate">
-              {book.title}
-            </span>
-            <span className="text-[10px] text-[#C8A66A] font-sans italic">
-              {book.author}
-            </span>
+
+          <div className="hidden lg:block h-5 w-[1px] bg-[#C8A66A]/20" />
+
+          <div className="hidden sm:flex items-center space-x-2.5">
+            <BrandLogo size="sm" showText={false} />
+            <div className="flex flex-col">
+              <span className="font-serif text-sm font-bold text-[#F5EBD7] max-w-xs truncate">
+                {book.title}
+              </span>
+              <span className="text-[10px] text-[#C8A66A] font-sans italic">
+                {book.author}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -484,44 +500,37 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
 
       {/* Main 3D Book Experience Stage */}
       <main className="relative flex-1 flex items-center justify-center px-2 sm:px-6 py-4 perspective-2000 overflow-hidden">
-        {/* Book Opening Animation Simulation */}
-        {!isOpen && isOpeningAnim && (
-          <div className="text-center space-y-4 animate-pulse">
-            <Sparkles className="w-10 h-10 text-[#C8A66A] mx-auto animate-spin" />
-            <p className="font-serif text-lg text-[#DFCA9B]">
-              Opening the leaves of <em>{book.title}</em>...
-            </p>
-          </div>
-        )}
-
-        {isOpen && (
+        <div
+          className="relative w-full max-w-5xl h-[82vh] max-h-[780px] flex items-center justify-center transform-style-3d transition-transform duration-500 animate-in fade-in zoom-in-95 duration-500"
+          style={{
+            boxShadow: "0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 50px rgba(200, 166, 106, 0.15)",
+          }}
+        >
+          {/* The Hardcover Binding Base (Extends behind pages) */}
           <div
-            className="relative w-full max-w-5xl h-[82vh] max-h-[780px] flex items-center justify-center transform-style-3d transition-transform duration-500"
+            className="absolute -inset-2 sm:-inset-3 rounded-2xl border-2 border-[#C8A66A]/50 shadow-2xl -z-20"
             style={{
-              boxShadow: "0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 50px rgba(200, 166, 106, 0.15)",
+              backgroundColor: book.spine_color || "#10271F",
+              backgroundImage: `radial-gradient(circle at 50% 50%, rgba(200, 166, 106, 0.15) 0%, rgba(0,0,0,0.6) 100%)`,
             }}
-          >
-            {/* The Hardcover Binding Base (Extends behind pages) */}
-            <div
-              className="absolute -inset-2 sm:-inset-3 rounded-2xl border-2 border-[#C8A66A]/50 shadow-2xl -z-20"
-              style={{
-                backgroundColor: book.spine_color || "#10271F",
-                backgroundImage: `radial-gradient(circle at 50% 50%, rgba(200, 166, 106, 0.15) 0%, rgba(0,0,0,0.6) 100%)`,
-              }}
-            />
+          />
 
-            {/* Left Outer Page Block Edge (Stacked Paper Effect) */}
-            <div className="absolute left-[-6px] top-3 bottom-3 w-3 bg-[#E8DCC4] book-edge-shadow rounded-l-xs -z-10" />
-            {/* Right Outer Page Block Edge */}
-            <div className="absolute right-[-6px] top-3 bottom-3 w-3 bg-[#E8DCC4] book-edge-shadow rounded-r-xs -z-10" />
+          {/* Outer Page Block Edge (Stacked Paper Effect) */}
+          <div className="absolute left-[-6px] top-3 bottom-3 w-3 bg-[#E8DCC4] book-edge-shadow rounded-l-xs -z-10" />
+          <div className="absolute right-[-6px] top-3 bottom-3 w-3 bg-[#E8DCC4] book-edge-shadow rounded-r-xs -z-10" />
 
-            {/* Desktop Double-Page Spread */}
+          {/* Desktop Double-Page Spread (>= 1024px) */}
+          {isDesktop ? (
             <div className="relative w-full h-full flex rounded-xl overflow-hidden shadow-2xl">
-              {/* Left Page (Even Number or Title) */}
+              {/* Left Page (Even Number or Frontispiece) */}
               <div
                 onClick={handlePrevPage}
-                className={`hidden lg:flex flex-1 h-full p-8 sm:p-12 md:p-14 flex-col justify-between relative cursor-pointer group border-r border-[#25241F]/15 ${themeClasses}`}
+                className={`flex-1 h-full p-8 sm:p-12 md:p-14 flex flex-col justify-between relative cursor-pointer group border-r border-[#25241F]/15 ${themeClasses}`}
               >
+                {/* Filigree Corner Accents */}
+                <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#C8A66A]/40 pointer-events-none" />
+                <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#C8A66A]/40 pointer-events-none" />
+
                 {/* Gutter Spine Shadow on Right Edge of Left Page */}
                 <div className="absolute right-0 top-0 bottom-0 w-16 spine-shadow-left pointer-events-none" />
 
@@ -544,7 +553,7 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
                   }}
                 />
 
-                {/* Left Page Footer (Page Number & Chapter Name) */}
+                {/* Left Page Footer */}
                 <div className={`pt-4 border-t border-[#25241F]/10 flex items-center justify-between text-xs font-sans ${themePageNumber}`}>
                   <span>{leftPage ? leftPage.pageNumber : ""}</span>
                   <span className="italic truncate max-w-[200px] font-serif">
@@ -552,30 +561,30 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
                   </span>
                 </div>
 
-                {/* Left Page Curl Hover Hint & Corner Curl Fold */}
-                <div className="absolute bottom-0 left-0 w-8 h-8 pointer-events-none">
-                  <div className="w-full h-full bg-gradient-to-tr from-black/15 to-transparent rounded-tr-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+                {/* Left Page Curl Hover Hint */}
                 <div className="absolute bottom-2 left-2 w-8 h-8 opacity-0 group-hover:opacity-60 transition-opacity flex items-center justify-center text-[#C8A66A]">
                   <ChevronLeft className="w-5 h-5" />
                 </div>
               </div>
 
               {/* Central Spine Gutter Joint with Headband Cloth */}
-              <div className="hidden lg:flex flex-col justify-between items-center w-[4px] h-full bg-gradient-to-r from-black/50 via-black/85 to-black/50 z-20 shadow-inner relative">
-                {/* Top Headband Cloth Accent */}
-                <div className="w-3 h-1.5 bg-gradient-to-r from-[#DFCA9B] via-[#9E2A2B] to-[#DFCA9B] shadow-xs rounded-b-xs" />
-                {/* Bottom Tailband Cloth Accent */}
-                <div className="w-3 h-1.5 bg-gradient-to-r from-[#DFCA9B] via-[#9E2A2B] to-[#DFCA9B] shadow-xs rounded-t-xs" />
+              <div className="flex flex-col justify-between items-center w-[6px] h-full bg-gradient-to-r from-black/60 via-[#10271F] to-black/60 z-20 shadow-2xl relative">
+                <div className="w-4 h-2 bg-gradient-to-r from-[#DFCA9B] via-[#9E2A2B] to-[#DFCA9B] shadow-xs rounded-b-xs" />
+                <div className="w-[1px] h-full bg-[#C8A66A]/20" />
+                <div className="w-4 h-2 bg-gradient-to-r from-[#DFCA9B] via-[#9E2A2B] to-[#DFCA9B] shadow-xs rounded-t-xs" />
               </div>
 
-              {/* Right Page (Odd Number) - Active on Mobile as Single Page */}
+              {/* Right Page (Odd Number) */}
               <div
                 onClick={handleNextPage}
                 className={`flex-1 h-full p-8 sm:p-12 md:p-14 flex flex-col justify-between relative cursor-pointer group ${themeClasses}`}
               >
+                {/* Filigree Corner Accents */}
+                <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#C8A66A]/40 pointer-events-none" />
+                <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#C8A66A]/40 pointer-events-none" />
+
                 {/* Gutter Spine Shadow on Left Edge of Right Page */}
-                <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-16 spine-shadow-right pointer-events-none" />
+                <div className="absolute left-0 top-0 bottom-0 w-16 spine-shadow-right pointer-events-none" />
 
                 {/* Page Content */}
                 <div
@@ -604,30 +613,67 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
                   <span>{rightPage ? rightPage.pageNumber : ""}</span>
                 </div>
 
-                {/* Right Page Curl Hover Hint & Corner Curl Fold */}
-                <div className="absolute bottom-0 right-0 w-8 h-8 pointer-events-none">
-                  <div className="w-full h-full bg-gradient-to-tl from-black/15 to-transparent rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+                {/* Right Page Curl Hover Hint */}
                 <div className="absolute bottom-2 right-2 w-8 h-8 opacity-0 group-hover:opacity-60 transition-opacity flex items-center justify-center text-[#C8A66A]">
                   <ChevronRight className="w-5 h-5" />
                 </div>
               </div>
             </div>
-
-            {/* Simulated 3D Flipping Leaf Overlay */}
-            {isFlipping && (
+          ) : (
+            /* Mobile Single-Page Folio (< 1024px) */
+            <div className="relative w-full h-full flex rounded-xl overflow-hidden shadow-2xl">
               <div
-                className={`absolute inset-0 z-30 pointer-events-none flex transition-all duration-500 ${
-                  flipDirection === "next"
-                    ? "animate-in fade-in"
-                    : "animate-in fade-in"
-                }`}
+                onClick={handleNextPage}
+                className={`flex-1 h-full p-6 sm:p-10 flex flex-col justify-between relative cursor-pointer group ${themeClasses}`}
               >
-                <div className="w-full h-full bg-black/10 backdrop-blur-[0.5px]" />
+                <div className="absolute top-2.5 left-2.5 w-3.5 h-3.5 border-t border-l border-[#C8A66A]/40 pointer-events-none" />
+                <div className="absolute top-2.5 right-2.5 w-3.5 h-3.5 border-t border-r border-[#C8A66A]/40 pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 w-3.5 h-3.5 border-b border-l border-[#C8A66A]/40 pointer-events-none" />
+                <div className="absolute bottom-2.5 right-2.5 w-3.5 h-3.5 border-b border-r border-[#C8A66A]/40 pointer-events-none" />
+
+                {/* Page Content */}
+                <div
+                  className="flex-1 font-serif leading-relaxed overflow-hidden"
+                  style={{
+                    fontSize:
+                      fontSize === "sm"
+                        ? "0.92rem"
+                        : fontSize === "md"
+                        ? "1.05rem"
+                        : fontSize === "lg"
+                        ? "1.2rem"
+                        : "1.35rem",
+                    lineHeight: "1.75",
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: activeSinglePage?.html || "<p class='italic opacity-40 text-center my-auto'>End of volume.</p>",
+                  }}
+                />
+
+                {/* Single Page Footer */}
+                <div className={`pt-3 border-t border-[#25241F]/10 flex items-center justify-between text-xs font-sans ${themePageNumber}`}>
+                  <span className="italic truncate max-w-[200px] font-serif">
+                    {activeSinglePage?.chapterTitle || book.title}
+                  </span>
+                  <span className="font-bold text-[#C8A66A]">Page {activeSinglePage ? activeSinglePage.pageNumber : currentPage}</span>
+                </div>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+
+          {/* Simulated 3D Flipping Leaf Overlay */}
+          {isFlipping && (
+            <div
+              className={`absolute inset-0 z-30 pointer-events-none flex transition-all duration-300 ${
+                flipDirection === "next"
+                  ? "animate-in fade-in"
+                  : "animate-in fade-in"
+              }`}
+            >
+              <div className="w-full h-full bg-black/10 backdrop-blur-[0.5px]" />
+            </div>
+          )}
+        </div>
 
         {/* Previous and Next Physical Side Arrows */}
         <button
@@ -659,7 +705,7 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
           <kbd className="px-1.5 py-0.5 rounded bg-[#10271F] border border-[#C8A66A]/30 text-[10px] text-[#DFCA9B]">
             →
           </kbd>
-          <span className="hidden sm:inline">or click page margins to turn</span>
+          <span className="hidden sm:inline">or click pages to turn</span>
         </div>
 
         {/* Page Jump Slider */}
@@ -718,7 +764,6 @@ export default function BookReader({ book, initialPage = 1 }: BookReaderProps) {
               </button>
 
               {book.chapters.map((chapter) => {
-                // Find start page of this chapter
                 const firstPageOfChapter = allPages.find(
                   (p) => p.chapterIndex === chapter.chapter_number - 1
                 );
