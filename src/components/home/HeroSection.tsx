@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, Sparkles, ArrowRight } from "lucide-react";
+import { BookOpen, Sparkles, ArrowRight, Feather } from "lucide-react";
 import { Book } from "@/types/database";
 
 interface HeroSectionProps {
@@ -13,8 +13,8 @@ interface HeroSectionProps {
 export default function HeroSection({ initialBook }: HeroSectionProps) {
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(initialBook || null);
-  const [rotateX, setRotateX] = useState(-5);
-  const [rotateY, setRotateY] = useState(15);
+  const [rotateX, setRotateX] = useState(-4);
+  const [rotateY, setRotateY] = useState(16);
   const [isOpening, setIsOpening] = useState(false);
 
   // If initialBook wasn't passed, fetch the most read book dynamically
@@ -47,26 +47,36 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    setRotateY((x / rect.width) * 35);
-    setRotateX(-(y / rect.height) * 25);
+    const normX = Math.max(-1, Math.min(1, x / (rect.width / 2)));
+    const normY = Math.max(-1, Math.min(1, y / (rect.height / 2)));
+    // Elegant controlled bounds: always forward-facing
+    setRotateY(16 + normX * 8);
+    setRotateX(-4 - normY * 6);
   };
 
   const handleMouseLeave = () => {
     if (!isOpening) {
-      setRotateX(-5);
-      setRotateY(15);
+      setRotateX(-4);
+      setRotateY(16);
     }
   };
 
   const handleBookClick = () => {
+    if (isOpening) return;
     setIsOpening(true);
+
     setTimeout(() => {
       if (hasBooks && activeBook.slug) {
         router.push(`/read/${activeBook.slug}`);
       } else {
         router.push("/admin/books/new");
       }
-    }, 700);
+    }, 650);
+
+    // Fallback reset if navigation is delayed or cancelled
+    setTimeout(() => {
+      setIsOpening(false);
+    }, 2800);
   };
 
   return (
@@ -181,82 +191,158 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
           </div>
 
           {/* Right Column: Large 3D Hardcover Book in Sunlight (Dynamically Most Read) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center perspective-1500 py-6">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center py-6 select-none" style={{ perspective: "1600px" }}>
             <div
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
               onClick={handleBookClick}
-              className="relative cursor-pointer group select-none transition-all"
-              style={{
-                perspective: "1800px",
-              }}
+              className="relative cursor-pointer group"
+              style={{ transformStyle: "preserve-3d" }}
             >
-              {/* Halo sunlight behind book */}
-              <div className="absolute -inset-8 bg-radial from-[#C8A66A]/25 via-transparent to-transparent rounded-full blur-2xl group-hover:from-[#C8A66A]/40 transition-all duration-500" />
+              {/* Golden Ambient Halo behind book */}
+              <div
+                className={`absolute -inset-10 bg-radial from-[#C8A66A]/30 via-transparent to-transparent rounded-full blur-3xl transition-all duration-700 pointer-events-none ${
+                  isOpening ? "from-[#C8A66A]/60 scale-125" : "group-hover:from-[#C8A66A]/45"
+                }`}
+              />
 
               {/* The 3D Book Container */}
               <div
-                className="relative w-64 sm:w-72 md:w-80 h-[380px] sm:h-[420px] md:h-[450px] transform-style-3d transition-transform duration-300 ease-out"
+                className="relative w-64 sm:w-72 md:w-80 h-[390px] sm:h-[430px] md:h-[460px] transition-all duration-500 ease-out"
                 style={{
+                  transformStyle: "preserve-3d",
                   transform: isOpening
-                    ? "rotateY(-70deg) translateZ(80px) scale(1.08)"
+                    ? "rotateX(-1deg) rotateY(10deg) scale(1.06) translateZ(40px)"
                     : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-                  boxShadow: "0 25px 60px -15px rgba(0,0,0,0.8), 0 0 40px rgba(200,166,106,0.15)",
+                  boxShadow: isOpening
+                    ? "0 30px 80px -10px rgba(0,0,0,0.9), 0 0 50px rgba(200,166,106,0.3)"
+                    : "0 25px 60px -15px rgba(0,0,0,0.8), 0 0 40px rgba(200,166,106,0.15)",
                 }}
               >
-                {/* Book Spine (3D Left Edge with Raised Ribs) */}
+                {/* 1. Leather Spine (3D Left Edge with Raised Ribs) */}
                 <div
-                  className="absolute left-0 top-0 w-12 h-full border-l border-[#C8A66A]/40 origin-left flex flex-col justify-between py-6"
+                  className="absolute left-0 top-0 w-8 h-full border-l border-[#C8A66A]/40 flex flex-col justify-between py-6"
                   style={{
+                    transformOrigin: "left center",
+                    transform: "rotateY(-90deg)",
                     backgroundColor: activeBook.spine_color || "#10271F",
-                    backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.7), transparent 30%, transparent 70%, rgba(0,0,0,0.7))",
-                    transform: "rotateY(-90deg) translateX(-48px)",
+                    backgroundImage:
+                      "linear-gradient(to right, rgba(0,0,0,0.8), transparent 35%, transparent 65%, rgba(0,0,0,0.8))",
                   }}
                 >
-                  {/* Raised Leather Spine Ribs */}
-                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
-                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
-                  <div className="h-full flex items-center justify-center rotate-90 text-[#DFCA9B] font-serif text-[11px] tracking-[0.25em] font-semibold whitespace-nowrap opacity-90 drop-shadow">
+                  {/* Raised Gilded Ribs */}
+                  <div className="h-1 w-full bg-gradient-to-r from-black via-[#C8A66A] to-black shadow" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black via-[#C8A66A] to-black shadow" />
+                  <div className="h-full flex items-center justify-center rotate-90 text-[#DFCA9B] font-serif text-[10px] tracking-[0.25em] font-bold whitespace-nowrap opacity-90 drop-shadow">
                     {activeBook.title.toUpperCase()}
                   </div>
-                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
-                  <div className="h-1 w-full bg-gradient-to-r from-black/80 via-[#C8A66A]/80 to-black/80 shadow-md" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black via-[#C8A66A] to-black shadow" />
+                  <div className="h-1 w-full bg-gradient-to-r from-black via-[#C8A66A] to-black shadow" />
                 </div>
+
+                {/* 2. Back Cover (Underneath Layer) */}
+                <div
+                  className="absolute inset-0 rounded-r-xl border border-[#C8A66A]/40 shadow-2xl"
+                  style={{
+                    backgroundColor: activeBook.spine_color || "#10271F",
+                    transform: "translateZ(-14px)",
+                    backgroundImage:
+                      "radial-gradient(circle at 50% 50%, rgba(200, 166, 106, 0.1) 0%, transparent 80%)",
+                  }}
+                />
+
+                {/* 3. Stacked Paper Edges (Right and Bottom) */}
+                <div
+                  className="absolute right-0 top-2 bottom-2 w-7 bg-[#F5EBD7] rounded-r-xs border-y border-[#E2D4B7]"
+                  style={{
+                    transformOrigin: "right center",
+                    transform: "rotateY(90deg) translateX(14px)",
+                    backgroundImage:
+                      "repeating-linear-gradient(to bottom, #F9F5EC 0px, #F9F5EC 2px, #E8DEC7 2px, #E8DEC7 4px)",
+                    boxShadow: "inset 0 0 10px rgba(0,0,0,0.25)",
+                  }}
+                />
 
                 {/* Hanging Silk Bookmark Ribbon at Bottom */}
                 <div
-                  className="absolute -bottom-8 right-16 w-5 h-12 shadow-xl rounded-b-xs border-x transform -rotate-2 -z-10 pointer-events-none"
+                  className="absolute -bottom-9 right-16 w-5 h-14 shadow-xl border-x pointer-events-none transition-transform duration-500"
                   style={{
                     backgroundColor: activeBook.accent_color || "#C8A66A",
                     borderColor: "#DFCA9B",
                     clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%)",
+                    transform: isOpening ? "translateZ(10px) rotate(-6deg)" : "translateZ(-4px) rotate(-2deg)",
                   }}
                 />
 
-                {/* Visible Stacked Paper Block (Right & Bottom Edges) */}
+                {/* 4. Inner Parchment First Page (Revealed under front cover when it opens) */}
                 <div
-                  className="absolute right-0 top-2 bottom-2 w-7 bg-[#F5EBD7] book-edge-shadow rounded-r-sm border-y border-[#E8DCC4]"
+                  className="absolute inset-0 rounded-r-xl border border-[#C8A66A]/30 overflow-hidden p-8 flex flex-col justify-between"
                   style={{
-                    transform: "rotateY(90deg) translateZ(10px) translateX(14px)",
+                    backgroundColor: "#FAF5EA",
+                    backgroundImage: `
+                      radial-gradient(circle at 50% 40%, rgba(200, 166, 106, 0.15) 0%, transparent 70%),
+                      repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(200, 166, 106, 0.08) 28px, rgba(200, 166, 106, 0.08) 29px)
+                    `,
+                    transform: "translateZ(0px)",
+                    boxShadow: "inset 10px 0 20px rgba(0,0,0,0.15)",
                   }}
-                />
+                >
+                  {/* Subtle Candlelight Glow on Page */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#C8A66A]/10 to-transparent pointer-events-none" />
 
-                {/* Front Hardcover */}
+                  {/* Header Ornament */}
+                  <div className="text-center space-y-1">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-[#8C6D37]">
+                      ✦ SANCTUARY PRELUDE ✦
+                    </p>
+                    <div className="w-16 h-[1px] bg-[#C8A66A]/40 mx-auto" />
+                  </div>
+
+                  {/* First Page Opening Calligraphy */}
+                  <div className="space-y-3 my-auto text-[#1B2921]">
+                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#14261C] leading-tight line-clamp-2">
+                      {activeBook.title}
+                    </h3>
+                    <p className="font-serif italic text-xs text-[#8C6D37]">
+                      By {activeBook.author}
+                    </p>
+                    <div className="pt-2 text-xs font-serif leading-relaxed text-[#2C3B32]">
+                      <span className="float-left text-3xl font-serif font-bold text-[#8C6D37] mr-2 leading-none">
+                        E
+                      </span>
+                      very sentence etched into this volume has been preserved for the quiet hours of human wonder. Turn these living pages and enter the sanctuary.
+                    </div>
+                  </div>
+
+                  {/* Bottom Archival Mark */}
+                  <div className="text-center pt-2 border-t border-[#C8A66A]/20">
+                    <span className="text-[9px] font-mono tracking-widest text-[#8C6D37] uppercase">
+                      The Living Book • First Edition
+                    </span>
+                  </div>
+                </div>
+
+                {/* 5. Front Hardcover (Swings open cleanly without ever flipping backwards) */}
                 <div
-                  className={`w-full h-full rounded-r-xl overflow-hidden border-2 border-[#C8A66A]/60 flex flex-col justify-between p-6 relative transition-transform duration-700 ${
-                    isOpening ? "origin-left -rotate-y-120" : ""
-                  }`}
+                  className="absolute inset-0 rounded-r-xl border-2 border-[#C8A66A]/70 flex flex-col justify-between p-6 overflow-hidden transition-transform duration-700 ease-out"
                   style={{
+                    transformOrigin: "left center",
+                    transform: isOpening ? "rotateY(-42deg)" : "rotateY(0deg)",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
                     backgroundColor: activeBook.spine_color || "#10271F",
                     backgroundImage: `
                       radial-gradient(circle at 50% 30%, rgba(200, 166, 106, 0.22) 0%, transparent 70%),
                       repeating-linear-gradient(45deg, rgba(200, 166, 106, 0.03) 0px, rgba(200, 166, 106, 0.03) 2px, transparent 2px, transparent 6px)
                     `,
+                    boxShadow: isOpening
+                      ? "-8px 12px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(200,166,106,0.15)"
+                      : "inset 0 0 20px rgba(0,0,0,0.4)",
                   }}
                 >
                   {/* Shimmer Light Reflection Sweep on Hover */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
-                  
+
                   {/* Embossed Gold Foil Corner Ornaments */}
                   <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-[#C8A66A]" />
                   <div className="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-[#C8A66A]" />
@@ -266,9 +352,9 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
                   {/* Spine Crease Line */}
                   <div className="absolute top-0 bottom-0 left-6 w-[2px] bg-gradient-to-r from-black/40 via-white/10 to-transparent" />
 
-                  {/* Header Badge: Automatically Displays Most Read Stats */}
+                  {/* Header Badge */}
                   <div className="text-center pt-2">
-                    <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#091812]/80 border border-[#C8A66A]/40 text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-[#DFCA9B] font-semibold">
+                    <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#091812]/85 border border-[#C8A66A]/40 text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-[#DFCA9B] font-semibold">
                       <Sparkles className="w-3 h-3 text-[#C8A66A]" />
                       <span>
                         {hasBooks
@@ -298,9 +384,15 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
 
                   {/* Bottom Footer Notice */}
                   <div className="text-center pb-2">
-                    <span className="inline-block px-3 py-1 rounded-full bg-[#091812]/70 border border-[#C8A66A]/40 text-[11px] font-sans text-[#DFCA9B] tracking-wider uppercase group-hover:bg-[#C8A66A] group-hover:text-[#091812] transition-colors">
+                    <span
+                      className={`inline-block px-3 py-1.5 rounded-full border text-[11px] font-sans tracking-wider uppercase transition-all duration-300 ${
+                        isOpening
+                          ? "bg-[#C8A66A] text-[#091812] font-bold border-[#DFCA9B] shadow-lg animate-pulse"
+                          : "bg-[#091812]/75 border-[#C8A66A]/40 text-[#DFCA9B] group-hover:bg-[#C8A66A] group-hover:text-[#091812]"
+                      }`}
+                    >
                       {isOpening
-                        ? "Opening Pages..."
+                        ? "Opening Sanctuary..."
                         : hasBooks
                         ? "Click to Open Book"
                         : "Click to Import (.docx)"}
@@ -310,7 +402,7 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
               </div>
 
               {/* Pedestal Base Shadow */}
-              <div className="w-48 sm:w-64 h-8 bg-black/60 rounded-full blur-xl mx-auto -mt-3 transform -rotate-x-60" />
+              <div className="w-48 sm:w-64 h-8 bg-black/60 rounded-full blur-xl mx-auto -mt-3 transform -rotate-x-60 pointer-events-none" />
 
               {/* Floating hint label */}
               <p className="text-center text-xs font-serif italic text-[#C8A66A]/80 mt-4 animate-bounce">
