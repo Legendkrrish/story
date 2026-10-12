@@ -186,11 +186,7 @@ export const db = {
     if (!book) return null;
 
     const category = data.categories.find((c) => c.id === book.category_id);
-    let chapters = data.chapters[book.id] || [];
-
-    if ((!chapters || chapters.length === 0) && initialChapters[book.id]) {
-      chapters = initialChapters[book.id];
-    }
+    const chapters = data.chapters[book.id] || [];
 
     return {
       ...book,
@@ -348,7 +344,7 @@ export const db = {
     const featured = data.thoughts.find((t) => t.is_featured && t.is_published);
     if (featured) return featured;
 
-    return data.thoughts[0] || initialThoughts[0];
+    return data.thoughts[0] || null;
   },
 
   saveThought: (thoughtData: Partial<DailyThought>): DailyThought => {
