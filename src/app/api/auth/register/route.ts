@@ -29,12 +29,12 @@ export async function POST(request: Request) {
       avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}`,
       role: "reader" as const,
       favorite_genre: favoriteGenre || "Inspirational",
+      password: password,
       created_at: new Date().toISOString(),
     };
 
-    // Store in DB state
-    const allProfiles = db.getAllProfiles();
-    allProfiles.push(newProfile);
+    // Permanently persist to DB state & disk
+    db.saveProfile(newProfile);
 
     await setSession(newProfile);
     return NextResponse.json({ success: true, profile: newProfile });

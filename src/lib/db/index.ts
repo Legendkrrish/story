@@ -86,22 +86,16 @@ function loadDatabase(): DatabaseState {
     chapters = loaded.chapters;
   }
 
-  // Thoughts: ensure all initial thoughts exist
-  const thoughtMap = new Map<string, DailyThought>();
-  initialThoughts.forEach((t) => thoughtMap.set(t.id, t));
-  if (loaded?.thoughts && Array.isArray(loaded.thoughts)) {
-    loaded.thoughts.forEach((t) => thoughtMap.set(t.id, t));
-  } else {
-    needsSync = true;
+  // Thoughts: respect loaded thoughts (can be empty array if user cleared)
+  let thoughts: DailyThought[] = [];
+  if (loaded && Array.isArray(loaded.thoughts)) {
+    thoughts = loaded.thoughts;
   }
 
-  // Stories: ensure all initial stories exist
-  const storyMap = new Map<string, Story>();
-  initialStories.forEach((s) => storyMap.set(s.id, s));
-  if (loaded?.stories && Array.isArray(loaded.stories)) {
-    loaded.stories.forEach((s) => storyMap.set(s.id, s));
-  } else {
-    needsSync = true;
+  // Stories: respect loaded stories (can be empty array if user cleared)
+  let stories: Story[] = [];
+  if (loaded && Array.isArray(loaded.stories)) {
+    stories = loaded.stories;
   }
 
   // Profiles
@@ -117,8 +111,8 @@ function loadDatabase(): DatabaseState {
     categories: Array.from(categoryMap.values()),
     books,
     chapters,
-    thoughts: Array.from(thoughtMap.values()),
-    stories: Array.from(storyMap.values()),
+    thoughts,
+    stories,
     profiles: Array.from(profileMap.values()),
     readingProgress: loaded?.readingProgress || [],
     bookmarks: loaded?.bookmarks || [],
@@ -684,9 +678,10 @@ export const db = {
   // User profiles
   getProfile: (emailOrId: string): Profile | null => {
     const data = loadDatabase();
+    const clean = emailOrId.toLowerCase();
     return (
       data.profiles.find(
-        (p) => p.email === emailOrId || p.id === emailOrId
+        (p) => p.email.toLowerCase() === clean || p.id === emailOrId
       ) || null
     );
   },
@@ -694,5 +689,22 @@ export const db = {
   getAllProfiles: (): Profile[] => {
     const data = loadDatabase();
     return data.profiles;
+  },
+
+  saveProfile: (profile: Profile): Profile => {
+    const data = loadDatabase();
+    const cleanEmail = profile.email.toLowerCase();
+    const existingIndex = data.profiles.findIndex(
+      (p) => p.email.toLowerCase() === cleanEmail || p.id === profile.id
+    );
+
+    if (existingIndex >= 0) {
+      data.profiles[existingIndex] = { ...data.profiles[existingIndex], ...profile };
+    } else {
+      data.profiles.push(profile);
+    }
+
+    saveDatabase(data);
+    return profile;
   },
 };

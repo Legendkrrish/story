@@ -100,14 +100,6 @@
   ],
   "readingProgress": [],
   "bookmarks": [],
-  "favorites": [
-    {
-      "id": "fav-1791752762220",
-      "user_id": "admin-1",
-      "item_type": "thought",
-      "item_id": "th-2",
-      "created_at": "2026-10-11T21:06:02.220Z"
-    }
-  ],
+  "favorites": [],
   "readingSessions": []
 }

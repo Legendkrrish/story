@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, Shield, Key, Mail, Sparkles, ArrowRight } from "lucide-react";
+import { Key, Mail, ArrowRight } from "lucide-react";
 import BrandLogo from "@/components/ui/BrandLogo";
 
 export default function LoginPage() {
@@ -40,16 +40,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillAdminCredentials = () => {
-    setEmail("admin@thelivingbook.com");
-    setPassword("admin123");
-  };
-
-  const fillReaderCredentials = () => {
-    setEmail("reader@thelivingbook.com");
-    setPassword("reader123");
   };
 
   return (
@@ -89,7 +79,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="archivist@thelivingbook.com"
+                  placeholder="reader@thelivingbook.com"
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#091812] border border-[#C8A66A]/30 text-[#F5EBD7] placeholder-[#F5EBD7]/40 focus:outline-none focus:border-[#C8A66A] transition-colors"
                 />
               </div>
@@ -122,32 +112,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Credential Pills */}
-          <div className="pt-4 border-t border-[#C8A66A]/20 space-y-2">
-            <span className="text-[10px] text-[#DFCA9B]/70 uppercase tracking-wider block text-center">
-              Quick Demo Logins
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={fillAdminCredentials}
-                className="py-2 px-3 rounded-xl bg-[#091812] border border-[#C8A66A]/30 text-[11px] text-[#C8A66A] hover:border-[#C8A66A] flex items-center justify-center space-x-1"
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admin Login</span>
-              </button>
-              <button
-                type="button"
-                onClick={fillReaderCredentials}
-                className="py-2 px-3 rounded-xl bg-[#091812] border border-[#C8A66A]/30 text-[11px] text-[#DFCA9B] hover:border-[#C8A66A] flex items-center justify-center space-x-1"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Reader Login</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="text-center text-xs text-[#F5EBD7]/60 pt-2">
+          <div className="text-center text-xs text-[#F5EBD7]/60 pt-4 border-t border-[#C8A66A]/15">
             Don&apos;t have an account yet?{" "}
             <Link
               href="/register"

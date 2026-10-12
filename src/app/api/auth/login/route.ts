@@ -43,6 +43,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (profile.password && profile.password !== password) {
+      return NextResponse.json(
+        { error: "Incorrect password. Please try again." },
+        { status: 401 }
+      );
+    }
+
     await setSession(profile);
     return NextResponse.json({ success: true, profile });
   } catch (error) {

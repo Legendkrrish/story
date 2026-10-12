@@ -92,6 +92,7 @@ export interface Profile {
   role: 'admin' | 'reader';
   bio?: string;
   favorite_genre?: string;
+  password?: string;
   created_at: string;
 }
 
