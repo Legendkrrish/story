@@ -169,6 +169,36 @@ export default function NewBookImportPage() {
     setParsedChapters(updated);
   };
 
+  const handleAddManualChapter = () => {
+    const newNum = parsedChapters.length + 1;
+    const newChapter: ParsedChapter = {
+      chapter_number: newNum,
+      title: `Chapter ${newNum}: Untitled`,
+      content_html: `<p class="first-letter-dropcap">O</p><p>Write or paste your story here...</p>`,
+      raw_text: "Write or paste your story here...",
+      word_count: 50,
+    };
+    const updated = [...parsedChapters, newChapter];
+    setParsedChapters(updated);
+    setImportDone(true);
+    setActiveChapterTab(updated.length - 1);
+  };
+
+  const handleDeleteChapter = (indexToDelete: number) => {
+    if (parsedChapters.length <= 1) {
+      setStatusMessage({
+        type: "error",
+        text: "The manuscript must have at least one chapter.",
+      });
+      return;
+    }
+    const updated = parsedChapters
+      .filter((_, idx) => idx !== indexToDelete)
+      .map((ch, idx) => ({ ...ch, chapter_number: idx + 1 }));
+    setParsedChapters(updated);
+    setActiveChapterTab((prev) => Math.min(prev, updated.length - 1));
+  };
+
   // Submit and Publish Book
   const handlePublishBook = async () => {
     if (!title || !author) {
@@ -358,6 +388,30 @@ export default function NewBookImportPage() {
               placeholder="https://..."
               className="w-full px-4 py-3 rounded-xl bg-[#091812] border border-[#C8A66A]/30 text-[#F5EBD7] focus:outline-none focus:border-[#C8A66A]"
             />
+            {/* Quick Cover Image Presets */}
+            <div className="flex items-center space-x-2 mt-2 overflow-x-auto pb-1 scrollbar-none">
+              <span className="text-[10px] text-[#DFCA9B]/60 font-mono shrink-0">Presets:</span>
+              {[
+                { label: "Emerald Folio", url: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=800" },
+                { label: "Ancient Parchment", url: "https://images.unsplash.com/photo-1532012164546-f432f2e3777f?auto=format&fit=crop&q=80&w=800" },
+                { label: "Golden Leaves", url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800" },
+                { label: "Burgundy Velvet", url: "https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&q=80&w=800" },
+                { label: "Forest Library", url: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=800" },
+              ].map((preset) => (
+                <button
+                  key={preset.url}
+                  type="button"
+                  onClick={() => setCoverUrl(preset.url)}
+                  className={`px-2 py-0.5 rounded text-[10px] whitespace-nowrap transition-all border ${
+                    coverUrl === preset.url
+                      ? "bg-[#C8A66A] text-[#091812] font-bold border-[#DFCA9B]"
+                      : "bg-[#091812] text-[#DFCA9B]/80 border-[#C8A66A]/20 hover:border-[#C8A66A]/60"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -374,6 +428,30 @@ export default function NewBookImportPage() {
               <span className="text-xs text-[#F5EBD7]/70 font-mono">
                 {spineColor}
               </span>
+            </div>
+            {/* Color Presets */}
+            <div className="flex items-center space-x-2 mt-2">
+              {[
+                { name: "Forest", hex: "#1A3C34" },
+                { name: "Walnut", hex: "#4B2E1E" },
+                { name: "Navy", hex: "#182C3F" },
+                { name: "Crimson", hex: "#4B1E22" },
+                { name: "Onyx", hex: "#171614" },
+                { name: "Sage", hex: "#203A2B" },
+              ].map((sw) => (
+                <button
+                  key={sw.hex}
+                  type="button"
+                  onClick={() => setSpineColor(sw.hex)}
+                  title={sw.name}
+                  className={`w-6 h-6 rounded-full border transition-transform ${
+                    spineColor === sw.hex
+                      ? "border-[#DFCA9B] scale-110 shadow-md ring-2 ring-[#C8A66A]/50"
+                      : "border-black/50 hover:scale-105"
+                  }`}
+                  style={{ backgroundColor: sw.hex }}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -406,17 +484,28 @@ export default function NewBookImportPage() {
             </div>
           </div>
 
-          {/* Quick Demo Preloaded DOCX Button */}
+          {/* Quick Demo Preloaded DOCX Button & Manual Option */}
           <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={handleUseSampleDocx}
-              disabled={isParsing}
-              className="text-xs text-[#C8A66A] hover:text-[#DFCA9B] underline flex items-center space-x-1"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Click to test with preloaded sample DOCX file</span>
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={handleUseSampleDocx}
+                disabled={isParsing}
+                className="text-xs text-[#C8A66A] hover:text-[#DFCA9B] underline flex items-center space-x-1"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Test with preloaded sample DOCX</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleAddManualChapter}
+                className="text-xs text-[#DFCA9B] hover:text-[#F5EBD7] underline flex items-center space-x-1"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#C8A66A]" />
+                <span>+ Write / Paste Chapter Manually</span>
+              </button>
+            </div>
 
             <button
               type="button"
@@ -449,19 +538,37 @@ export default function NewBookImportPage() {
           {/* Chapter Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#C8A66A]/15">
             {parsedChapters.map((ch, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setActiveChapterTab(idx)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-                  activeChapterTab === idx
-                    ? "bg-[#C8A66A] text-[#091812]"
-                    : "bg-[#091812] text-[#F5EBD7]/70 hover:text-[#F5EBD7]"
-                }`}
-              >
-                Chapter {ch.chapter_number}: {ch.title}
-              </button>
+              <div key={idx} className="flex items-center space-x-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveChapterTab(idx)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
+                    activeChapterTab === idx
+                      ? "bg-[#C8A66A] text-[#091812]"
+                      : "bg-[#091812] text-[#F5EBD7]/70 hover:text-[#F5EBD7]"
+                  }`}
+                >
+                  Chapter {ch.chapter_number}: {ch.title}
+                </button>
+                {parsedChapters.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteChapter(idx)}
+                    title="Remove Chapter"
+                    className="px-1.5 py-1 rounded-md text-red-400 hover:text-red-300 hover:bg-red-950/40 transition-colors text-xs"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             ))}
+            <button
+              type="button"
+              onClick={handleAddManualChapter}
+              className="px-3.5 py-2 rounded-xl border border-dashed border-[#C8A66A]/40 text-[#DFCA9B] hover:border-[#C8A66A] text-xs font-semibold whitespace-nowrap transition-colors shrink-0"
+            >
+              + Add Chapter
+            </button>
           </div>
 
           {/* Active Chapter Editor */}

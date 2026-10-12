@@ -314,7 +314,9 @@ export default function HeroSection({ initialBook }: HeroSectionProps) {
 
               {/* Floating hint label */}
               <p className="text-center text-xs font-serif italic text-[#C8A66A]/80 mt-4 animate-bounce">
-                ✦ Hover to tilt in 3D • Click to read most read volume ✦
+                {hasBooks
+                  ? "✦ Hover to tilt in 3D • Click to open reading sanctuary ✦"
+                  : "✦ Interactive 3D Spine • Click to import your first manuscript ✦"}
               </p>
             </div>
           </div>
